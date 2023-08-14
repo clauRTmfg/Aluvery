@@ -1,5 +1,6 @@
 package br.com.alura.aluvery.sampledata
 
+import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import br.com.alura.aluvery.model.Product
 import java.math.BigDecimal
 
@@ -13,6 +14,7 @@ val sampleCandies = listOf(
         name = "Sorvete",
         price = BigDecimal("5.99"),
         image = "https://images.pexels.com/photos/1352278/pexels-photo-1352278.jpeg",
+        description = LoremIpsum(30).values.first()
     ),
     Product(
         name = "Bolo",
@@ -26,6 +28,7 @@ val sampleDrinks = listOf(
         name = "Cerveja",
         price = BigDecimal("5.99"),
         image = "https://images.pexels.com/photos/1552630/pexels-photo-1552630.jpeg",
+        description = LoremIpsum(40).values.first()
     ),
     Product(
         name = "Refrigerante",
@@ -53,7 +56,8 @@ val sampleProducts: List<Product> = listOf(
     Product(
         name = "Pizza",
         price = BigDecimal("19.99"),
-        image = "https://images.pexels.com/photos/825661/pexels-photo-825661.jpeg"
+        image = "https://images.pexels.com/photos/825661/pexels-photo-825661.jpeg",
+        description = LoremIpsum(10).values.first()
     ),
     Product(
         name = "Batata frita",
