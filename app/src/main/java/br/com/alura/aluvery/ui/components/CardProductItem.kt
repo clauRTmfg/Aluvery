@@ -1,6 +1,7 @@
 package br.com.alura.aluvery.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,9 +12,14 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.Dp
@@ -60,12 +66,22 @@ fun CardProductItem(
                     text = product.price.toBrazilianCurrency()
                 )
             }
-            product.description?.let {
-                Text(
-                    text = product.description,
-                    Modifier
-                        .padding(16.dp)
-                )
+
+            var expanded by remember { mutableStateOf(false) }
+            Column(Modifier.clickable { expanded = !expanded }) {
+                val overflow =
+                    if (expanded) TextOverflow.Visible
+                    else TextOverflow.Ellipsis
+                val maxlines =
+                    if (expanded) Int.MAX_VALUE else 2
+                product.description?.let {
+                    Text(
+                        text = product.description,
+                        Modifier.padding(16.dp),
+                        maxLines = maxlines,
+                        overflow = overflow
+                    )
+                }
             }
         }
     }
@@ -77,7 +93,7 @@ private fun CardProductItemPreview() {
     AluveryTheme {
         Surface {
             CardProductItem(
-                product = Product (
+                product = Product(
                     name = "teste",
                     price = BigDecimal("9.99"),
                 ),
@@ -92,7 +108,7 @@ private fun CardProductItemWithDescPreview() {
     AluveryTheme {
         Surface {
             CardProductItem(
-                product = Product (
+                product = Product(
                     name = "teste2",
                     price = BigDecimal("0.99"),
                     description = LoremIpsum(50).values.first(),
