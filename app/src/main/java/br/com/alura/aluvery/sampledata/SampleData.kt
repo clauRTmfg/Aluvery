@@ -63,7 +63,9 @@ val sampleProducts: List<Product> = listOf(
         name = "Batata frita",
         price = BigDecimal("7.99"),
         image = "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg"
-    ), *sampleDrinks.toTypedArray(), *sampleCandies.toTypedArray()
+    ),
+    *sampleDrinks.toTypedArray(),
+    *sampleCandies.toTypedArray()
 )
 
 val sampleSections = mapOf(
