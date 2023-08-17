@@ -24,23 +24,29 @@ import br.com.alura.aluvery.ui.components.ProductsSection
 import br.com.alura.aluvery.ui.components.SearchTextField
 import br.com.alura.aluvery.ui.theme.AluveryTheme
 
+class HomeScreenUIState(
+    val sections: Map<String, List<Product>> = emptyMap(),
+    val searchedProducts: List<Product> = emptyList(),
+    val searchText: String = "",
+    val onSearchChange: (String) -> Unit = {}
+) {
+    fun showAllSections(): Boolean {
+        return searchText.isBlank()
+    }
+}
+
 @Composable
 fun HomeScreen(
-    sections: Map<String, List<Product>>,
-    searchText: String = ""
+    state: HomeScreenUIState = HomeScreenUIState()
 ) {
     Column {
-        var text by remember { mutableStateOf(searchText) }
-        SearchTextField(searchText = text, onSearchChange = {
-            text = it
-        })
-        val searchedProducts = remember(text) {
-            if (text.isNotBlank()) {
-                sampleProducts.filter {
-                    it.name.contains(text, true)
-                }
-            } else emptyList()
-        }
+
+        val sections = state.sections
+        val text = state.searchText
+        val searchedProducts = state.searchedProducts
+
+        SearchTextField(searchText = text, state.onSearchChange)
+
         LazyColumn(
             Modifier
                 .fillMaxSize(),
@@ -48,7 +54,7 @@ fun HomeScreen(
             // o contentPadding substitui os Spacer abaixo
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            if (text.isBlank()) {
+            if (state.showAllSections()) {
                 //        item { Spacer(Modifier) }
                 sections.forEach {
                     val title = it.key
@@ -72,7 +78,7 @@ fun HomeScreen(
 private fun HomeScreenPreview() {
     AluveryTheme {
         Surface {
-            HomeScreen(sampleSections)
+            HomeScreen(HomeScreenUIState(sampleSections))
         }
     }
 }
@@ -82,7 +88,7 @@ private fun HomeScreenPreview() {
 private fun HomeScreenSearchTextPreview() {
     AluveryTheme {
         Surface {
-            HomeScreen(sampleSections, searchText = "a")
+            HomeScreen(state = HomeScreenUIState(searchText = "a", sections = sampleSections))
         }
     }
 }
