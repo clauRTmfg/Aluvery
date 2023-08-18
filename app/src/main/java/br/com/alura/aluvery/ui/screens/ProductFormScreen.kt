@@ -70,6 +70,7 @@ fun ProductFormScreen(onSave: (Product) -> Unit = {}) {
             name = name,
             price = price,
             description = description,
+            isPriceError = isPriceError,
             onURLChange = { url = it },
             onNameChange = { name = it },
             onPriceChange = {
