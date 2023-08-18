@@ -38,34 +38,7 @@ class MainActivity : ComponentActivity() {
                 startActivity(Intent(this, ProductFormActivity::class.java))
             }) {
                 val products = dao.products()
-                val sections = mapOf(
-                    "Todos os produtos" to products,
-                    "Promoções" to sampleDrinks + sampleCandies,
-                    "Doces" to sampleCandies,
-                    "Bebidas" to sampleDrinks
-                )
-
-                var text by remember {
-                    mutableStateOf("")
-                }
-                val searchedProducts = remember(text, products) {
-                    if (text.isNotBlank()) {
-                        sampleProducts.filter {it.name.contains(text, true)} +
-                                products.filter {it.name.contains(text, true)}
-                    } else emptyList()
-                }
-
-                // no remember usamos o products, pq é um objeto que sofre alterações
-                // durante a execução do app
-                val state = remember(products, text) {
-                    HomeScreenUIState(
-                        sections = sections,
-                        searchedProducts = searchedProducts,
-                        searchText = text,
-                        onSearchChange = { text = it }
-                    )
-                }
-                HomeScreen(state)
+                HomeScreen(products)
             }
         }
     }

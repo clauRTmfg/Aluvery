@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.alura.aluvery.model.Product
+import br.com.alura.aluvery.sampledata.sampleCandies
+import br.com.alura.aluvery.sampledata.sampleDrinks
 import br.com.alura.aluvery.sampledata.sampleProducts
 import br.com.alura.aluvery.sampledata.sampleSections
 import br.com.alura.aluvery.ui.components.CardProductItem
@@ -36,6 +38,43 @@ class HomeScreenUIState(
 }
 
 @Composable
+// função stateless
+fun HomeScreen(products: List<Product>) {
+
+    val sections = mapOf(
+        "Todos os produtos" to products + sampleProducts,
+        "Promoções" to sampleDrinks + sampleCandies,
+        "Doces" to sampleCandies,
+        "Bebidas" to sampleDrinks
+    )
+
+    var text by remember {
+        mutableStateOf("")
+    }
+
+    val searchedProducts = remember(text, products) {
+        if (text.isNotBlank()) {
+            sampleProducts.filter {it.name.contains(text, true)} +
+                    products.filter {it.name.contains(text, true)}
+        } else emptyList()
+    }
+
+    // no remember usamos o products, pq é um objeto que sofre alterações
+    // durante a execução do app
+    val state = remember(products, text) {
+        HomeScreenUIState(
+            sections = sections,
+            searchedProducts = searchedProducts,
+            searchText = text,
+            onSearchChange = { text = it }
+        )
+    }
+
+    HomeScreen(state = state)
+}
+
+@Composable
+// função stateful
 fun HomeScreen(
     state: HomeScreenUIState = HomeScreenUIState()
 ) {
