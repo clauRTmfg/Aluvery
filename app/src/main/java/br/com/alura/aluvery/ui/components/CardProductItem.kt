@@ -1,5 +1,6 @@
 package br.com.alura.aluvery.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -37,10 +39,12 @@ fun CardProductItem(
     modifier: Modifier = Modifier,
     elevation: Dp = 4.dp
 ) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
     Card(
         modifier
             .fillMaxWidth()
-            .heightIn(150.dp),
+            .heightIn(150.dp)
+            .clickable { expanded = !expanded },
         elevation = elevation
     ) {
         Column {
@@ -67,22 +71,15 @@ fun CardProductItem(
                 )
             }
 
-            var expanded by remember { mutableStateOf(false) }
-            Column(Modifier.clickable { expanded = !expanded }) {
-                val overflow =
-                    if (expanded) TextOverflow.Visible
-                    else TextOverflow.Ellipsis
-                val maxlines =
-                    if (expanded) Int.MAX_VALUE else 2
-                product.description?.let {
+            product.description?.let {
+                AnimatedVisibility(expanded) {
                     Text(
                         text = product.description,
                         Modifier.padding(16.dp),
-                        maxLines = maxlines,
-                        overflow = overflow
                     )
                 }
             }
+
         }
     }
 }
