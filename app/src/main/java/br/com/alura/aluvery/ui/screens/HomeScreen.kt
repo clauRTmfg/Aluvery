@@ -9,73 +9,31 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import br.com.alura.aluvery.model.Product
-import br.com.alura.aluvery.sampledata.sampleCandies
-import br.com.alura.aluvery.sampledata.sampleDrinks
-import br.com.alura.aluvery.sampledata.sampleProducts
 import br.com.alura.aluvery.sampledata.sampleSections
 import br.com.alura.aluvery.ui.components.CardProductItem
 import br.com.alura.aluvery.ui.components.ProductsSection
 import br.com.alura.aluvery.ui.components.SearchTextField
+import br.com.alura.aluvery.ui.states.HomeScreenUIState
 import br.com.alura.aluvery.ui.theme.AluveryTheme
+import br.com.alura.aluvery.ui.viewmodels.HomeScreenViewModel
 
-class HomeScreenUIState(
-    val sections: Map<String, List<Product>> = emptyMap(),
-    val searchedProducts: List<Product> = emptyList(),
-    val searchText: String = "",
-    val onSearchChange: (String) -> Unit = {}
-) {
-    fun showAllSections(): Boolean {
-        return searchText.isBlank()
-    }
-}
 
 @Composable
-// função stateless
-fun HomeScreen(products: List<Product>) {
-
-    val sections = mapOf(
-        "Todos os produtos" to products + sampleProducts,
-        "Promoções" to sampleDrinks + sampleCandies,
-        "Doces" to sampleCandies,
-        "Bebidas" to sampleDrinks
-    )
-
-    var text by rememberSaveable {
-        mutableStateOf("")
-    }
-
-    val searchedProducts = remember(text, products) {
-        if (text.isNotBlank()) {
-            sampleProducts.filter {it.name.contains(text, true)} +
-                    products.filter {it.name.contains(text, true)}
-        } else emptyList()
-    }
-
-    // no remember usamos o products, pq é um objeto que sofre alterações
-    // durante a execução do app
-    val state = remember(products, text) {
-        HomeScreenUIState(
-            sections = sections,
-            searchedProducts = searchedProducts,
-            searchText = text,
-            onSearchChange = { text = it }
-        )
-    }
-
+// função stateful
+fun HomeScreen(
+    viewmodel: HomeScreenViewModel
+) {
+    val state by viewmodel.uiState.collectAsState()
     HomeScreen(state = state)
 }
 
 @Composable
-// função stateful
+// função stateless
 fun HomeScreen(
     state: HomeScreenUIState = HomeScreenUIState()
 ) {

@@ -17,6 +17,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,79 +34,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.alura.aluvery.R
 import br.com.alura.aluvery.model.Product
+import br.com.alura.aluvery.ui.states.ProductFormScreenUIState
 import br.com.alura.aluvery.ui.theme.AluveryTheme
+import br.com.alura.aluvery.ui.viewmodels.HomeScreenViewModel
+import br.com.alura.aluvery.ui.viewmodels.ProductFormScreenViewModel
 import coil.compose.AsyncImage
 import java.math.BigDecimal
 
-class ProductFormScreenUIState(
-    val url: String = "",
-    val name: String = "",
-    val price: String = "",
-    val isPriceError: Boolean = false,
-    val description: String = "",
-    val onURLChange: (String) -> Unit = {},
-    val onNameChange: (String) -> Unit = {},
-    val onPriceChange: (String) -> Unit = {},
-    val onDescChange: (String) -> Unit = {},
-    val onSaveClick: () -> Unit = {},
+
+@Composable
+fun ProductFormScreen(
+    viewmodel: ProductFormScreenViewModel,
+    onSave: () -> Unit = {}
 ) {
-    fun showImage(): Boolean {
-        return url.isNotBlank()
-    }
+    val state by viewmodel.uiState.collectAsState()
+    ProductFormScreen(
+        state = state,
+        onSave = {
+            viewmodel.save()
+            onSave()
+        })
 }
 
-@Composable
-fun ProductFormScreen(onSave: (Product) -> Unit = {}) {
-
-    var url by rememberSaveable { mutableStateOf("") }
-    var name by rememberSaveable { mutableStateOf("") }
-    var price by rememberSaveable { mutableStateOf("") }
-    var isPriceError by remember { mutableStateOf(false) }
-    var description by rememberSaveable { mutableStateOf("") }
-
-//    onSaveClick: (Product) -> Unit = {}
-
-    val state = remember(url, name, price, description) {
-        ProductFormScreenUIState(
-            url = url,
-            name = name,
-            price = price,
-            description = description,
-            isPriceError = isPriceError,
-            onURLChange = { url = it },
-            onNameChange = { name = it },
-            onPriceChange = {
-                isPriceError = try {
-                    BigDecimal(it)
-                    false
-                } catch (e: IllegalArgumentException) {
-                    it.isNotEmpty()
-                }
-                price = it
-            },
-            onDescChange = { description = it },
-            onSaveClick = {
-                val convertedPrice = try {
-                    BigDecimal(price)
-                } catch (e: NumberFormatException) {
-                    BigDecimal.ZERO
-                }
-                val product = Product(
-                    name = name,
-                    image = url,
-                    price = convertedPrice,
-                    description = description
-                )
-                onSave(product)
-            }
-        )
-    }
-
-    ProductFormScreen(state = state)
-}
 
 @Composable
-fun ProductFormScreen(state: ProductFormScreenUIState = ProductFormScreenUIState()) {
+fun ProductFormScreen(
+    state: ProductFormScreenUIState = ProductFormScreenUIState(),
+    onSave: () -> Unit = {}
+) {
     Column(
         Modifier
             .fillMaxSize()
@@ -206,7 +162,7 @@ fun ProductFormScreen(state: ProductFormScreenUIState = ProductFormScreenUIState
         )
 
         Button(
-            onClick = state.onSaveClick,
+            onClick = onSave,
             Modifier.fillMaxWidth()
         ) {
             Text(text = "Salvar")
